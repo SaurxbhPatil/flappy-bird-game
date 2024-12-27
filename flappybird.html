@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird Game</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000; /* Background color for the page */
+        }
+        canvas {
+            border: 2px solid #fff; /* Optional: add a border around the canvas */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <script src="game.js"></script> <!-- Link to your JavaScript file -->
+</body>
+</html>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let bird = new Image();
+    bird.src = 'bird.png'; // Path to the bird image
+
+    let background = new Image();
+    background.src = 'background.png'; // Path to the background image
+
+    let gameOver = false;
+    let countdown = 3;
+
+    function draw() {
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(bird, 50, 150, 50, 50); // Draw the bird at a fixed position for now
+
+        if (gameOver) {
+            ctx.fillStyle = 'white';
+            ctx.font = '48px Arial';
+            ctx.fillText('Game Over', canvas.width / 2 - 150, canvas.height / 2 - 50);
+            ctx.fillText('Retry', canvas.width / 2 - 50, canvas.height / 2 + 50);
+        }
+    }
+
+    function startCountdown() {
+        let countdownInterval = setInterval(() => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.font = '48px Arial';
+            ctx.fillText(countdown, canvas.width / 2 - 20, canvas.height / 2);
+            countdown--;
+
+            if (countdown < 0) {
+                clearInterval(countdownInterval);
+                countdown = 3;
+                gameOver = false;
+                // Start the game logic here
+            }
+        }, 1000);
+    }
+
+    canvas.addEventListener('click', function(event) {
+        if (gameOver) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            if (x > canvas.width / 2 - 50 && x < canvas.width / 2 + 50 && y > canvas.height / 2 && y < canvas.height / 2 + 100) {
+                startCountdown();
+            }
+        }
+    });
+
+    function gameLoop() {
+        draw();
+        if (!gameOver) {
+            requestAnimationFrame(gameLoop);
+        }
+    }
+
+    bird.onload = function() {
+        gameLoop();
+    };
+</script> 
